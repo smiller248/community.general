@@ -485,16 +485,15 @@ class RedfishUtils(object):
                 'ret': False,
                 'msg': "ComputerSystem's Members array is either empty or missing"}
         self.systems_uri = self.systems_uris[0]
-        if self.data_modification:
-            if self.resource_id:
-                self.systems_uri = self._get_resource_uri_by_id(self.systems_uris,
-                                                                self.resource_id)
-                if not self.systems_uri:
-                    return {
-                        'ret': False,
-                        'msg': "System resource %s not found" % self.resource_id}
-            elif len(self.systems_uris) > 1:
-                self.module.fail_json(msg=FAIL_MSG % {'resource': 'System'})
+        if self.resource_id:
+            self.systems_uri = self._get_resource_uri_by_id(self.systems_uris,
+                                                            self.resource_id)
+            if not self.systems_uri:
+                return {
+                    'ret': False,
+                    'msg': "System resource %s not found" % self.resource_id}
+        elif len(self.systems_uris) > 1 and self.data_modification:
+            self.module.fail_json(msg=FAIL_MSG % {'resource': 'System'})
         return {'ret': True}
 
     def _find_updateservice_resource(self):
@@ -564,16 +563,15 @@ class RedfishUtils(object):
             return {'ret': False,
                     'msg': "Managers Members array is either empty or missing"}
         self.manager_uri = self.manager_uris[0]
-        if self.data_modification:
-            if self.resource_id:
-                self.manager_uri = self._get_resource_uri_by_id(self.manager_uris,
-                                                                self.resource_id)
-                if not self.manager_uri:
-                    return {
-                        'ret': False,
-                        'msg': "Manager resource %s not found" % self.resource_id}
-            elif len(self.manager_uris) > 1:
-                self.module.fail_json(msg=FAIL_MSG % {'resource': 'Manager'})
+        if self.resource_id:
+            self.manager_uri = self._get_resource_uri_by_id(self.manager_uris,
+                                                            self.resource_id)
+            if not self.manager_uri:
+                return {
+                    'ret': False,
+                    'msg': "Manager resource %s not found" % self.resource_id}
+        elif len(self.manager_uris) > 1 and self.data_modification:
+            self.module.fail_json(msg=FAIL_MSG % {'resource': 'Manager'})
         return {'ret': True}
 
     def _get_all_action_info_values(self, action):
@@ -2954,7 +2952,15 @@ class RedfishUtils(object):
         return result
 
     def get_multi_system_inventory(self):
+        if self.resource_id:
+            return self.get_single_system(self.get_system_inventory)
         return self.aggregate_systems(self.get_system_inventory)
+
+    def get_single_system(self, func):
+        result = func(self.systems_uri)
+        result['entries']['system_uri'] = self.systems_uri
+        result['entries'] = [result['entries']]
+        return result
 
     def get_network_protocols(self):
         result = {}
@@ -3361,7 +3367,15 @@ class RedfishUtils(object):
         return result
 
     def get_multi_manager_inventory(self):
+        if self.resource_id:
+            return self.get_single_manager(self.get_manager_inventory)
         return self.aggregate_managers(self.get_manager_inventory)
+
+    def get_single_manager(self, func):
+        result = func(self.manager_uri)
+        result['entries']['manager_uri'] = self.manager_uri
+        result['entries'] = [result['entries']]
+        return result
 
     def set_session_service(self, sessions_config):
         if sessions_config is None:

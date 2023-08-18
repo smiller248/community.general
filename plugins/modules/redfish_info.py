@@ -388,6 +388,7 @@ def main():
             auth_token=dict(no_log=True),
             timeout=dict(type='int', default=10),
             update_handle=dict(),
+            resource_id=dict(),
         ),
         required_together=[
             ('username', 'password'),
@@ -412,9 +413,12 @@ def main():
     # update handle
     update_handle = module.params['update_handle']
 
+    # System or manager ID
+    resource_id = module.params['resource_id']
+
     # Build root URI
     root_uri = "https://" + module.params['baseuri']
-    rf_utils = RedfishUtils(creds, root_uri, timeout, module)
+    rf_utils = RedfishUtils(creds, root_uri, timeout, module, resource_id=resource_id)
 
     # Build Category list
     if "all" in module.params['category']:

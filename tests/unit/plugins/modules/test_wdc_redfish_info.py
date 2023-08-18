@@ -12,6 +12,7 @@ from ansible.module_utils import basic
 import ansible_collections.community.general.plugins.modules.wdc_redfish_info as module
 from ansible_collections.community.general.tests.unit.plugins.modules.utils import AnsibleExitJson, AnsibleFailJson
 from ansible_collections.community.general.tests.unit.plugins.modules.utils import set_module_args, exit_json, fail_json
+from ansible_collections.community.general.tests.unit.plugins.modules.utils import get_bin_path, get_redfish_facts, get_exception_message
 
 MOCK_SUCCESSFUL_RESPONSE_WITH_ACTIONS = {
     "ret": True,
@@ -48,21 +49,6 @@ MOCK_SUCCESSFUL_RESPONSE_WITH_SIMPLE_UPDATE_BUT_NO_FW_ACTIVATE = {
         }
     }
 }
-
-
-def get_bin_path(self, arg, required=False):
-    """Mock AnsibleModule.get_bin_path"""
-    return arg
-
-
-def get_redfish_facts(ansible_exit_json):
-    """From an AnsibleExitJson exception, get the redfish facts dict."""
-    return ansible_exit_json.exception.args[0]["redfish_facts"]
-
-
-def get_exception_message(ansible_exit_json):
-    """From an AnsibleExitJson exception, get the message string."""
-    return ansible_exit_json.exception.args[0]["msg"]
 
 
 class TestWdcRedfishInfo(unittest.TestCase):

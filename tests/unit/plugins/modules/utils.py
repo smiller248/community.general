@@ -42,6 +42,21 @@ def fail_json(*args, **kwargs):
     raise AnsibleFailJson(kwargs)
 
 
+def get_bin_path(self, arg, required=False):
+    """Mock AnsibleModule.get_bin_path"""
+    return arg
+
+
+def get_redfish_facts(ansible_exit_json):
+    """From an AnsibleExitJson exception, get the redfish facts dict."""
+    return ansible_exit_json.exception.args[0]["redfish_facts"]
+
+
+def get_exception_message(ansible_exit_json):
+    """From an AnsibleExitJson exception, get the message string."""
+    return ansible_exit_json.exception.args[0]["msg"]
+
+
 class ModuleTestCase(unittest.TestCase):
 
     def setUp(self):
